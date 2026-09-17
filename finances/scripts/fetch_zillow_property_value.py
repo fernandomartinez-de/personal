@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-Fetch property value from Redfin and update Supabase real_estate_history table.
+Fetch property value from Zillow Zestimate and update Supabase real_estate_history table.
 
 Usage:
-    python fetch_redfin_property_value.py
+    python fetch_zillow_property_value.py
 
 Environment Variables:
     SUPABASE_URL - Your Supabase project URL
     SUPABASE_KEY - Your Supabase anon/service key
+    ZILLOW_API_KEY - (Optional) RapidAPI key for Zillow API access
 
 Author: Fernando Martinez
-Created: 2026-09-14
+Created: 2026-09-17
 """
 
 import os
@@ -30,15 +31,14 @@ except ImportError as e:
     sys.exit(1)
 
 # Configuration
-# Using public listing page (no authentication required)
-REDFIN_URL = "https://www.redfin.com/NY/Brooklyn/66-S-6th-St-11249/unit-4A/home/196193525"
-# For owner dashboard (requires cookie): https://www.redfin.com/myredfin/owner-dashboard/36948925
+PROPERTY_ADDRESS = "66-S-6th-St-Brooklyn-NY-11249"  # Zillow URL format
+ZILLOW_URL = f"https://www.zillow.com/homedetails/66-S-6th-St-4A-Brooklyn-NY-11249/444738887_zpid/"
+PROPERTY_ZPID = "444738887"  # Zillow Property ID (from URL)
 PROPERTY_NAME = "66 S 6th St, Unit 4A, Brooklyn, NY"
 ASSET_TYPE = "Condo"
 COST_BASIS = Decimal("895000.00")  # Original purchase price (April 2025)
 
 # Mortgage details for equity calculation
-# You can update this manually or fetch from Chase mortgage statements
 INITIAL_MORTGAGE = Decimal("475000.00")  # Initial loan amount
 MONTHLY_PAYMENT_TO_PRINCIPAL = Decimal("798.00")  # Approximate principal per month (6.49% rate)
 MORTGAGE_START_DATE = date(2025, 4, 1)  # April 2025 closing
@@ -60,26 +60,83 @@ def get_current_mortgage_balance():
     return max(current_balance, Decimal("0.00"))  # Don't go negative
 
 
-def fetch_redfin_home_value(url):
+def fetch_zillow_via_api(zpid):
     """
-    Scrape Redfin page for estimated home value.
+    Fetch Zillow Zestimate via RapidAPI.
 
-    NOTE: The owner dashboard requires authentication. This script uses session cookies
-    to access the dashboard. You need to:
-    1. Log in to Redfin in your browser
-    2. Copy the session cookie
-    3. Set REDFIN_COOKIE environment variable
+    Requires ZILLOW_API_KEY environment variable set to your RapidAPI key.
+    Sign up at: https://rapidapi.com/apimaker/api/zillow-com1
+
+    Args:
+        zpid: Zillow Property ID
+
+    Returns:
+        Decimal: Estimated home value, or None if not found
+    """
+    api_key = os.getenv('ZILLOW_API_KEY')
+
+    if not api_key:
+        print("  [INFO] No ZILLOW_API_KEY found - will try web scraping instead")
+        return None
+
+    try:
+        url = "https://zillow-scraper-1000-free-calls.p.rapidapi.com/properties/detail"
+
+        querystring = {"property_id": zpid}
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-RapidAPI-Key": api_key,
+            "X-RapidAPI-Host": "zillow-scraper-1000-free-calls.p.rapidapi.com"
+        }
+
+        print(f"  Calling Zillow API for ZPID {zpid}...")
+        response = requests.get(url, headers=headers, params=querystring, timeout=30)
+        response.raise_for_status()
+
+        data = response.json()
+
+        # Extract Zestimate from API response
+        # API returns: { "zpid": "...", "zestimate": 1234567, "price": 1234567, ... }
+        zestimate = data.get('zestimate')
+
+        # Fallback to price if zestimate not available
+        if not zestimate:
+            zestimate = data.get('price')
+
+        if zestimate:
+            value = Decimal(str(zestimate))
+            print(f"  [OK] Found Zestimate via API: ${value:,.2f}")
+            return value
+
+        print("  [X] No Zestimate found in API response")
+        print(f"  [X] Response keys: {list(data.keys())}")
+        return None
+
+    except requests.RequestException as e:
+        print(f"  [X] API request failed: {e}")
+        return None
+    except Exception as e:
+        print(f"  [X] Error parsing API response: {e}")
+        return None
+
+
+def fetch_zillow_via_scraping(url):
+    """
+    Scrape Zillow property page for Zestimate.
+
+    Fallback method when API is not available.
+
+    Args:
+        url: Zillow property page URL
 
     Returns:
         Decimal: Estimated home value, or None if not found
     """
     try:
-        # Check for session cookie (required for owner dashboard)
-        redfin_cookie = os.getenv('REDFIN_COOKIE')
-
         # Use headers to mimic a real browser
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
             'Accept-Encoding': 'gzip, deflate',
@@ -87,73 +144,90 @@ def fetch_redfin_home_value(url):
             'Upgrade-Insecure-Requests': '1'
         }
 
-        cookies = {}
-        if redfin_cookie:
-            # Parse cookie string if provided
-            cookies = {'RF_AUTH': redfin_cookie}
-            print("  Using authentication cookie")
-        else:
-            print("  [!] No REDFIN_COOKIE set - may not work for owner dashboard")
-
-        print(f"Fetching: {url}")
-        response = requests.get(url, headers=headers, cookies=cookies, timeout=30)
+        print(f"  Fetching: {url}")
+        response = requests.get(url, headers=headers, timeout=30)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Try multiple selectors - Redfin's HTML structure
-        # Look for "Redfin Estimate" or similar pricing elements
+        # Method 1: Look for structured data (JSON-LD)
+        json_ld_scripts = soup.find_all('script', type='application/ld+json')
+        for script in json_ld_scripts:
+            try:
+                import json
+                data = json.loads(script.string)
 
-        # Method 1: Look for meta tags (often has property value)
-        og_price = soup.find('meta', property='og:price:amount')
-        if og_price and og_price.get('content'):
-            value = Decimal(og_price['content'])
-            print(f"  [OK] Found value in meta tag: ${value:,.2f}")
-            return value
+                # Look for price in structured data
+                if isinstance(data, dict):
+                    price = data.get('price') or data.get('offers', {}).get('price')
+                    if price:
+                        value = Decimal(str(price))
+                        print(f"  [OK] Found price in JSON-LD: ${value:,.2f}")
+                        return value
+            except:
+                continue
 
-        # Method 2: Look for price in specific divs or spans
-        # Owner dashboard specific selectors + fallback to public page selectors
+        # Method 2: Look for Zestimate in specific elements
+        # Zillow uses data-testid attributes
         price_selectors = [
-            {'class': 'estimate-value'},  # Owner dashboard estimate
-            {'data-rf-test-id': 'owner-estimate-value'},  # Owner dashboard
-            {'class': 'home-estimate'},  # Owner dashboard
-            {'class': 'statsValue'},  # Common Redfin class (public page)
-            {'data-rf-test-id': 'abp-price'},  # Public page
-            {'class': 'home-main-stats-price'},  # Public page
-            {'class': 'price'}  # Generic fallback
+            {'data-testid': 'zestimate-value'},
+            {'data-testid': 'zestimate-text'},
+            {'data-testid': 'price'},
+            {'class': 'summary-price'},
+            {'class': 'zestimate-value'}
         ]
 
         for selector in price_selectors:
-            price_elem = soup.find('div', selector) or soup.find('span', selector)
+            price_elem = soup.find('span', selector) or soup.find('div', selector)
             if price_elem:
                 price_text = price_elem.get_text(strip=True)
-                # Extract numbers from text like "$1,242,410" or "$1.24M"
+                # Extract numbers from text like "$1,019,300" or "$1.02M"
                 price_match = re.search(r'[\$]?([\d,]+)', price_text)
                 if price_match:
                     value_str = price_match.group(1).replace(',', '')
                     value = Decimal(value_str)
-                    print(f"  [OK] Found value with selector {selector}: ${value:,.2f}")
+                    print(f"  [OK] Found Zestimate with selector {selector}: ${value:,.2f}")
                     return value
 
-        # Method 3: Search for any text containing "$" and numbers
+        # Method 3: Search page text for "Zestimate"
         all_text = soup.get_text()
-        estimate_match = re.search(r'Redfin Estimate[:\s]+\$?([\d,]+)', all_text, re.IGNORECASE)
-        if estimate_match:
-            value_str = estimate_match.group(1).replace(',', '')
+        zestimate_match = re.search(r'Zestimate[®]?[:\s]+\$?([\d,]+)', all_text, re.IGNORECASE)
+        if zestimate_match:
+            value_str = zestimate_match.group(1).replace(',', '')
             value = Decimal(value_str)
-            print(f"  [OK] Found Redfin Estimate in text: ${value:,.2f}")
+            print(f"  [OK] Found Zestimate in page text: ${value:,.2f}")
             return value
 
-        print("  [X] Could not find home value on page")
+        print("  [X] Could not find Zestimate on page")
         print("  -> You may need to inspect the HTML and update the selectors")
         return None
 
     except requests.RequestException as e:
-        print(f"  [X] Network error fetching Redfin page: {e}")
+        print(f"  [X] Network error fetching Zillow page: {e}")
         return None
     except Exception as e:
-        print(f"  [X] Error parsing Redfin page: {e}")
+        print(f"  [X] Error parsing Zillow page: {e}")
         return None
+
+
+def fetch_zillow_zestimate():
+    """
+    Fetch Zillow Zestimate using API first, falling back to scraping.
+
+    Returns:
+        Decimal: Estimated home value, or None if not found
+    """
+    print("\n[1/3] Fetching property value from Zillow...")
+
+    # Try API first (faster, more reliable)
+    value = fetch_zillow_via_api(PROPERTY_ZPID)
+
+    # Fall back to web scraping if API fails
+    if not value:
+        print("  Trying web scraping method...")
+        value = fetch_zillow_via_scraping(ZILLOW_URL)
+
+    return value
 
 
 def update_supabase(snapshot_date, home_value, mortgage_balance):
@@ -178,7 +252,7 @@ def update_supabase(snapshot_date, home_value, mortgage_balance):
         supabase: Client = create_client(supabase_url, supabase_key)
 
         # Check if snapshot for this date and source already exists
-        existing = supabase.table('real_estate_history').select('*').eq('snapshot_date', str(snapshot_date)).eq('asset_name', PROPERTY_NAME).eq('data_source', 'Redfin').execute()
+        existing = supabase.table('real_estate_history').select('*').eq('snapshot_date', str(snapshot_date)).eq('asset_name', PROPERTY_NAME).eq('data_source', 'Zillow').execute()
 
         # Calculate equity and gain/loss
         net_equity = float(home_value) - float(mortgage_balance)
@@ -186,7 +260,7 @@ def update_supabase(snapshot_date, home_value, mortgage_balance):
 
         if existing.data and len(existing.data) > 0:
             record = existing.data[0]
-            print(f"  [!] Snapshot for {snapshot_date} already exists:")
+            print(f"  [!] Zillow snapshot for {snapshot_date} already exists:")
             print(f"    Previous value: ${float(record['home_value']):,.2f}, equity: ${float(record['net_equity']):,.2f}")
             print(f"    New value: ${home_value:,.2f}, new equity: ${net_equity:,.2f}")
 
@@ -195,7 +269,7 @@ def update_supabase(snapshot_date, home_value, mortgage_balance):
                 print("  Skipping update.")
                 return False
 
-            # Update existing record with calculated values
+            # Update existing record
             update_data = {
                 'home_value': float(home_value),
                 'mortgage_balance': float(mortgage_balance),
@@ -203,9 +277,9 @@ def update_supabase(snapshot_date, home_value, mortgage_balance):
                 'unrealized_gain_loss': unrealized_gain_loss
             }
             supabase.table('real_estate_history').update(update_data).eq('id', record['id']).execute()
-            print(f"  [OK] Updated snapshot for {snapshot_date}")
+            print(f"  [OK] Updated Zillow snapshot for {snapshot_date}")
         else:
-            # Insert new record with calculated values
+            # Insert new record
             insert_data = {
                 'snapshot_date': str(snapshot_date),
                 'asset_name': PROPERTY_NAME,
@@ -215,15 +289,15 @@ def update_supabase(snapshot_date, home_value, mortgage_balance):
                 'net_equity': net_equity,
                 'cost_basis': float(COST_BASIS),
                 'unrealized_gain_loss': unrealized_gain_loss,
-                'data_source': 'Redfin'
+                'data_source': 'Zillow'
             }
             result = supabase.table('real_estate_history').insert(insert_data).execute()
-            print(f"  [OK] Inserted new snapshot for {snapshot_date}")
+            print(f"  [OK] Inserted new Zillow snapshot for {snapshot_date}")
 
-        # Display summary (use already calculated values)
+        # Display summary
         gain_loss_pct = (unrealized_gain_loss / float(COST_BASIS) * 100) if COST_BASIS else 0
 
-        print(f"\n Property Snapshot Summary:")
+        print(f"\n Property Snapshot Summary (Zillow):")
         print(f"  Date:               {snapshot_date}")
         print(f"  Home Value:         ${home_value:,.2f}")
         print(f"  Mortgage Balance:   ${mortgage_balance:,.2f}")
@@ -235,27 +309,28 @@ def update_supabase(snapshot_date, home_value, mortgage_balance):
 
     except Exception as e:
         print(f"  [X] Unexpected error: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
 def main():
     """Main execution function."""
     print("=" * 70)
-    print("Redfin Property Value Fetcher")
+    print("Zillow Zestimate Property Value Fetcher")
     print("=" * 70)
 
     today = date.today()
 
-    # Step 1: Fetch home value from Redfin
-    print("\n[1/3] Fetching property value from Redfin...")
-    home_value = fetch_redfin_home_value(REDFIN_URL)
+    # Step 1: Fetch home value from Zillow
+    home_value = fetch_zillow_zestimate()
 
     if not home_value:
-        print("\n[FAILED] Failed to fetch home value from Redfin.")
+        print("\n[FAILED] Failed to fetch Zestimate from Zillow.")
         print("\nTroubleshooting:")
-        print("  1. Check if Redfin URL is still valid")
-        print("  2. Verify network connection")
-        print("  3. Inspect Redfin page HTML and update selectors in script")
+        print("  1. Get a free RapidAPI key: https://rapidapi.com/apimaker/api/zillow-com1")
+        print("  2. Set ZILLOW_API_KEY environment variable")
+        print("  3. Or verify Zillow URL is correct and update selectors")
         sys.exit(1)
 
     # Step 2: Calculate current mortgage balance
@@ -269,7 +344,7 @@ def main():
     success = update_supabase(today, home_value, mortgage_balance)
 
     if success:
-        print("\n[SUCCESS] SUCCESS: Property value updated in Supabase!")
+        print("\n[SUCCESS] SUCCESS: Zillow Zestimate updated in Supabase!")
         print(f"\nView in dashboard: finances.html -> Investments tab -> Real Estate card")
     else:
         print("\n[FAILED] FAILED: Could not update Supabase")
