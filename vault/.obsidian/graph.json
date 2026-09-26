@@ -1,0 +1,107 @@
+{
+  "collapse-filter": false,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:workflows/health",
+      "color": {
+        "a": 1,
+        "rgb": 5090411
+      }
+    },
+    {
+      "query": "path:workflows/finances",
+      "color": {
+        "a": 1,
+        "rgb": 16750899
+      }
+    },
+    {
+      "query": "path:workflows/docs",
+      "color": {
+        "a": 1,
+        "rgb": 16755371
+      }
+    },
+    {
+      "query": "path:workflows/travel",
+      "color": {
+        "a": 1,
+        "rgb": 5614831
+      }
+    },
+    {
+      "query": "path:workflows/tech",
+      "color": {
+        "a": 1,
+        "rgb": 10897023
+      }
+    },
+    {
+      "query": "path:workflows/scripts OR path:workflows/tables OR path:workflows/README",
+      "color": {
+        "a": 1,
+        "rgb": 16774912
+      }
+    },
+    {
+      "query": "path:identity",
+      "color": {
+        "a": 1,
+        "rgb": 5614591
+      }
+    },
+    {
+      "query": "path:life-admin",
+      "color": {
+        "a": 1,
+        "rgb": 16744192
+      }
+    },
+    {
+      "query": "path:family",
+      "color": {
+        "a": 1,
+        "rgb": 16744703
+      }
+    },
+    {
+      "query": "path:ops",
+      "color": {
+        "a": 1,
+        "rgb": 16728064
+      }
+    },
+    {
+      "query": "path:quick-ref",
+      "color": {
+        "a": 1,
+        "rgb": 8900331
+      }
+    },
+    {
+      "query": "file:README OR file:SUMMARY OR file:VAULT_INDEX OR file:index",
+      "color": {
+        "a": 1,
+        "rgb": 12056639
+      }
+    }
+  ],
+  "collapse-display": true,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.518713248970312,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 0.7132754626224369,
+  "close": true
+}

@@ -1,0 +1,226 @@
+{
+  "main": {
+    "id": "b18d98f5563ad5c7",
+    "type": "split",
+    "children": [
+      {
+        "id": "7091378563bf1de1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a489824acbedfc40",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "workflows/finances/finances-automation.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "finances-automation"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c4cfa3a71b321aa2",
+    "type": "split",
+    "children": [
+      {
+        "id": "7857db0f0f165170",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "91e08aaed7d6615f",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "652407cea5cf4552",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "94a9b9573cf295b3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "c85809cf1c084a61",
+    "type": "split",
+    "children": [
+      {
+        "id": "da5bd2c82f9fc601",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1177ae420a43b973",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "2f9f771bc5f2cf8d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "109dc41340efa156",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "e0a3b5cf5fc3106b",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "2bf99ec24295b447",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "a489824acbedfc40",
+  "lastOpenFiles": [
+    "life-admin/investments.md",
+    "ops/README.md",
+    "ops/outstanding/README.md",
+    "SUMMARY.md.tmp.9236.c5987519d179",
+    "SUMMARY.md.tmp.9236.722c5e8bff91",
+    "VAULT_INDEX.md.tmp.9236.c7a7fc5f5ae8",
+    "index.md.tmp.9236.8cabc2df2183",
+    "life-admin/investments.md.tmp.9236.e5e3d39e5066",
+    "ops/outgoing/docs/processing-log.md",
+    "VAULT_INDEX.md.tmp.32352.428894983cf4",
+    "SUMMARY.md.tmp.32352.3ecadf443a76",
+    "index.md.tmp.32352.b4f3a673bce1",
+    "workflows/health/supabase-tables.md.tmp.32352.b61ca9dcdf25",
+    "workflows/finances/scripts.md.tmp.32352.790bb5ba2cd1",
+    "workflows/README.md",
+    "VAULT_INDEX.md",
+    "README.md",
+    "SUMMARY.md",
+    "index.md",
+    "life-admin/will.md",
+    "life-admin/market-value-assessments.md",
+    "life-admin/property-tax-records.md",
+    "workflows/docs/scripts.md",
+    "ops/incoming/driver-license-checklist.png.png",
+    "outstanding.md",
+    "life-admin/travel.md",
+    "quick-ref/emergency.md",
+    "quick-ref/key-dates.md",
+    "quick-ref/renewals.md",
+    "life-admin/legal-estate.md",
+    "life-admin/property-deed.md",
+    "outgoing.md",
+    "ops/outgoing/README.md",
+    "workflows/docs/docs-automation.md",
+    "life-admin/credit-banking.md"
+  ]
+}
