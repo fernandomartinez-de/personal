@@ -12,7 +12,6 @@
     <meta name="apple-mobile-web-app-title" content="Medical">
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -376,14 +375,15 @@
                         </tr>
                     `).join('');
 
-                    const tshData = labs.reverse().filter(l => l.tsh).map(l => ({ x: l.date, y: l.tsh }));
+                    const tshFiltered = labs.reverse().filter(l => l.tsh);
                     const ctx1 = document.getElementById('tshChart').getContext('2d');
                     tshChart = new Chart(ctx1, {
                         type: 'line',
                         data: {
+                            labels: tshFiltered.map(l => new Date(l.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })),
                             datasets: [{
                                 label: 'TSH (mIU/L)',
-                                data: tshData,
+                                data: tshFiltered.map(l => l.tsh),
                                 borderColor: '#3b82f6',
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                                 tension: 0.4,
@@ -395,20 +395,21 @@
                             maintainAspectRatio: false,
                             plugins: { legend: { labels: { color: '#d1d5db' } } },
                             scales: {
-                                x: { type: 'time', time: { unit: 'month' }, ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
                                 y: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }
                             }
                         }
                     });
 
-                    const thyroglobulinData = labs.filter(l => l.thyroglobulin !== null && l.thyroglobulin !== undefined).map(l => ({ x: l.date, y: l.thyroglobulin }));
+                    const thyroglobulinFiltered = labs.filter(l => l.thyroglobulin !== null && l.thyroglobulin !== undefined);
                     const ctx2 = document.getElementById('thyroglobulinChart').getContext('2d');
                     thyroglobulinChart = new Chart(ctx2, {
                         type: 'line',
                         data: {
+                            labels: thyroglobulinFiltered.map(l => new Date(l.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })),
                             datasets: [{
                                 label: 'Thyroglobulin (ng/mL)',
-                                data: thyroglobulinData,
+                                data: thyroglobulinFiltered.map(l => l.thyroglobulin),
                                 borderColor: '#ef4444',
                                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
                                 tension: 0.4,
@@ -420,7 +421,7 @@
                             maintainAspectRatio: false,
                             plugins: { legend: { labels: { color: '#d1d5db' } } },
                             scales: {
-                                x: { type: 'time', time: { unit: 'month' }, ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
                                 y: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } }
                             }
                         }
@@ -478,10 +479,11 @@
                     bodyCompChart = new Chart(ctx3, {
                         type: 'line',
                         data: {
+                            labels: bodyCompData.map(d => new Date(d.test_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
                             datasets: [
-                                { label: 'Weight (kg)', data: bodyCompData.map(d => ({ x: d.test_date, y: d.weight })), borderColor: '#3b82f6', yAxisID: 'y' },
-                                { label: 'Body Fat %', data: bodyCompData.filter(d => d.body_fat_pct).map(d => ({ x: d.test_date, y: d.body_fat_pct })), borderColor: '#ef4444', yAxisID: 'y1' },
-                                { label: 'Muscle (kg)', data: bodyCompData.filter(d => d.skeletal_muscle_mass).map(d => ({ x: d.test_date, y: d.skeletal_muscle_mass })), borderColor: '#10b981', yAxisID: 'y' }
+                                { label: 'Weight (kg)', data: bodyCompData.map(d => d.weight), borderColor: '#3b82f6', yAxisID: 'y' },
+                                { label: 'Body Fat %', data: bodyCompData.map(d => d.body_fat_pct || null), borderColor: '#ef4444', yAxisID: 'y1', spanGaps: true },
+                                { label: 'Muscle (kg)', data: bodyCompData.map(d => d.skeletal_muscle_mass || null), borderColor: '#10b981', yAxisID: 'y', spanGaps: true }
                             ]
                         },
                         options: {
@@ -489,7 +491,7 @@
                             maintainAspectRatio: false,
                             plugins: { legend: { labels: { color: '#d1d5db' } } },
                             scales: {
-                                x: { type: 'time', time: { unit: 'month' }, ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
+                                x: { ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
                                 y: { type: 'linear', position: 'left', ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
                                 y1: { type: 'linear', position: 'right', ticks: { color: '#9ca3af' }, grid: { display: false } }
                             }
@@ -514,13 +516,16 @@
                     document.getElementById('nutri-recovery').classList.add(recoveryClass);
                 }
 
+                const recoveryReversed = recovery.reverse();
+                const cyclesReversed = cycles.reverse();
                 const ctx4 = document.getElementById('whoopChart').getContext('2d');
                 whoopChart = new Chart(ctx4, {
                     type: 'line',
                     data: {
+                        labels: recoveryReversed.map(d => new Date(d.recovery_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
                         datasets: [
-                            { label: 'Recovery %', data: recovery.reverse().map(d => ({ x: d.recovery_date, y: d.score_recovery_score })), borderColor: '#10b981', yAxisID: 'y' },
-                            { label: 'Strain', data: cycles.reverse().map(d => ({ x: d.start_time.split('T')[0], y: d.score_strain })), borderColor: '#f59e0b', yAxisID: 'y1' }
+                            { label: 'Recovery %', data: recoveryReversed.map(d => d.score_recovery_score), borderColor: '#10b981', yAxisID: 'y' },
+                            { label: 'Strain', data: recoveryReversed.map((_, i) => cyclesReversed[i]?.score_strain || null), borderColor: '#f59e0b', yAxisID: 'y1', spanGaps: true }
                         ]
                     },
                     options: {
@@ -528,7 +533,7 @@
                         maintainAspectRatio: false,
                         plugins: { legend: { labels: { color: '#d1d5db' } } },
                         scales: {
-                            x: { type: 'time', time: { unit: 'day' }, ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
+                            x: { ticks: { color: '#9ca3af', maxRotation: 45, minRotation: 45 }, grid: { color: '#374151' } },
                             y: { position: 'left', ticks: { color: '#9ca3af' }, grid: { color: '#374151' } },
                             y1: { position: 'right', ticks: { color: '#9ca3af' }, grid: { display: false } }
                         }
