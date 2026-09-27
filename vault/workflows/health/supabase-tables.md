@@ -227,6 +227,53 @@ each `strength_*` table.
 
 ---
 
+## exercises
+
+Exercise library catalog from free-exercise-db with 876 exercises.
+
+**Grain:** One row per exercise
+
+**Purpose:** Browse exercises by muscle group, equipment, and category for workout planning
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | serial | Primary key, auto-increment |
+| `name` | varchar | Exercise name (e.g. "Barbell Bench Press") |
+| `slug` | varchar | URL-safe identifier (unique) |
+| `muscle_group` | varchar | Primary muscle group (chest, back, shoulders, biceps, triceps, quadriceps, hamstrings, glutes, calves, core) |
+| `secondary_muscles` | text[] | Array of secondary muscles worked |
+| `equipment` | varchar | Required equipment (e.g. "barbell", "dumbbell", "body only") |
+| `category` | varchar | Exercise category (e.g. "strength", "cardio", "stretching") |
+| `force` | varchar | Force type (push, pull, static) |
+| `level` | varchar | Difficulty level (beginner, intermediate, expert) |
+| `mechanic` | varchar | Movement type (compound, isolation) |
+| `instructions` | text[] | Array of step-by-step instructions |
+| `images` | text[] | Array of GitHub URLs to exercise demonstration images |
+| `source_id` | varchar | Original ID from free-exercise-db |
+| `created_at` | timestamptz | When record was inserted into Supabase |
+
+**Muscle Group Breakdown:**
+- chest: 45 exercises
+- back: 70 exercises
+- shoulders: 40 exercises
+- biceps: 25 exercises
+- triceps: 30 exercises
+- quadriceps: 60 exercises
+- hamstrings: 35 exercises
+- glutes: 40 exercises
+- calves: 15 exercises
+- core: 516 exercises
+
+**Image URLs:** Point to GitHub raw content from yuhonas/free-exercise-db
+
+**Seeded by:** `health/fitness/seed_exercises.py` (one-time run)
+
+**Used by:** Future workout builder, exercise browser
+
+**Data Source:** https://github.com/yuhonas/free-exercise-db
+
+---
+
 ## labs
 
 Medical lab results extracted from PDF reports.
