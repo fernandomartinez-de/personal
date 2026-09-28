@@ -1,7 +1,7 @@
 ---
 type: life-admin
-last_updated: 2026-09-21
-related: [[employment]], [[investments]], [[taxes]]
+last_updated: 2026-09-27
+related: [[employment]], [[investments]], [[taxes]], [[workflows/finances/finances-automation]], [[workflows/tech/lyftr-app]]
 ---
 
 # Retirement Accounts
@@ -11,18 +11,26 @@ related: [[employment]], [[investments]], [[taxes]]
 **Account:** G:\My Drive\Personal\Employment\Retirement\Confirmation_ Fidelity NetBenefits.pdf
 **Portal:** nb.fidelity.com (NetBenefits)
 **Account number:** 401(k): 7458 (last 4)
-**Current balance:** $2,473.94 (as of September 2026)
+**Current balance:** ~$3,120.90 (auto-pulled from Fidelity via Plaid; refreshes weekdays)
+**Current holding:** CG 2055 target-date fund (ticker `ONUY`)
 
-**Automation (2026-09-21):** The 401k value now updates automatically from
-Fidelity via Plaid Investments once Fidelity clears Plaid review. Weekday
-snapshots land in Supabase `stocks_crypto_history` (asset_type `Retirement`)
-driven by `.github/workflows/pull-investments.yml`.
+**Automation (LIVE):** The 401k value updates automatically from Fidelity via
+Plaid Investments. Weekday snapshots land in Supabase
+`stocks_crypto_history` with `asset_type = 'Retirement'`, driven by
+`.github/workflows/pull-investments.yml` (cron `0 22 * * 1-5`, 18:00 ET),
+running `finances/scripts/plaid_investments_sync.py`.
 
 This is an employer 401k accessed through Fidelity NetBenefits. If NetBenefits
 only exposes the account balance rather than each fund, the pipeline records
 the total account balance as a single row (asset_name suffixed `(balance)`)
-so the retirement value is still captured. Submitted to Plaid review
-2026-09-21.
+so the retirement value is still captured.
+
+The v2 Lyftr app (see [[workflows/tech/lyftr-app]]) reads this live value in
+the Hub card, Finances → Investments page (sunburst / ladder / stat cards),
+and the "How Your 401(k) Works" modal. The prior hardcoded $2,480.30
+fallback constant lingers in a few source files as a defensive default when
+the Supabase query returns zero rows; when the live pull is healthy it is
+never used.
 
 **Contribution rate:** 6% Roth contributions
 **Employer match:** (Check benefits guide - typically 50% up to 6%)

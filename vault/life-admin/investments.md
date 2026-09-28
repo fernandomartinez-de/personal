@@ -1,7 +1,7 @@
 ---
 type: life-admin
-last_updated: 2026-09-21
-related: [[life-admin/taxes]], [[life-admin/retirement]]
+last_updated: 2026-09-27
+related: [[life-admin/taxes]], [[life-admin/retirement]], [[workflows/finances/finances-automation]], [[workflows/tech/lyftr-app]]
 ---
 
 # Investments & Accounts
@@ -54,9 +54,31 @@ See [[life-admin/retirement]] for details.
 
 Confirmation: G:\My Drive\Personal\Employment\Retirement\Confirmation_ Fidelity NetBenefits.pdf
 
-**Automation:** Employer 401k holdings auto-pull daily via Plaid Investments
-into `stocks_crypto_history` as asset_type `Retirement` (workflow
-`pull-investments.yml`). Details in [[workflows/finances/finances-automation]].
+**Automation (LIVE):** Employer 401k holdings auto-pull weekdays via Plaid
+Investments into `stocks_crypto_history` as `asset_type = 'Retirement'`.
+Pipeline: `.github/workflows/pull-investments.yml` (cron `0 22 * * 1-5`,
+18:00 ET) → `finances/scripts/plaid_investments_sync.py` →
+`/investments/holdings/get`. One-time auth via
+`finances/scripts/plaid_investments_link.py` (Plaid Hosted Link, separate
+Plaid item from Chase). Access token stored in GitHub Actions secret
+`PLAID_FIDELITY_ACCESS_TOKEN`. Local files
+`.plaid_investments_secrets.local` and `.env` are gitignored and never
+committed. Details in [[workflows/finances/finances-automation]].
+
+## Live Price Refresh (v2 Lyftr Investments Tab)
+
+The v2 React app (see [[workflows/tech/lyftr-app]]) has a manual **↻ Refresh
+Prices** button on the Investments page that writes a fresh snapshot into
+`stocks_crypto_history` on demand:
+
+- **Stocks (AAPL, NVDA, TSLA):** Finnhub `/quote` endpoint
+- **Crypto (Bitcoin):** CoinGecko `/simple/price`
+- **Real estate (Condo Zillow estimate):** RapidAPI Zillow scraper
+
+Manual holdings (Stock / Crypto rows) are hand-tracked and never overwritten
+by the weekday Fidelity Plaid pull, which only touches `Retirement` /
+`Brokerage` rows. Cost basis for TSLA is `$200` (7 shares bought in 2020,
+now 21 shares after 2022 3-for-1 split).
 
 ## Other Accounts
 
