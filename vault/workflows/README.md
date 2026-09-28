@@ -115,18 +115,16 @@ Static HTML trip planning sites with real-time updates:
 | Workflow | Schedule | Status | Last Update |
 |----------|----------|--------|-------------|
 | **Finances** |
-| Chase Transactions | Daily 8 AM UTC | ✅ Active | Auto via plaid_sync.py |
-| Fidelity Investments | Weekdays 9 PM UTC | ⏳ Pending | Awaiting Investments product |
-| Redfin Property Sync | Monthly 1st 1 AM | ✅ Active | Auto via fetch_redfin.py |
+| Chase Transactions | Daily 13:00 UTC (~09:00 EDT) | ✅ Active | Auto via plaid_sync.py |
+| Fidelity Investments | Weekdays 22:00 UTC (~18:00 EDT) | ✅ Active (live since 2026-09-27) | Auto via plaid_investments_sync.py |
 | **Fitness** |
-| WHOOP Daily Sync | Daily 8 AM UTC | ✅ Active | Auto via sync.py |
-| WHOOP Token Refresh | Weekly Sun midnight | ✅ Active | Auto via bootstrap.py |
-| Renpho Body Sync | Daily 9 AM UTC | ✅ Active | Auto via sync_renpho.py |
-| Fitness Dashboard Build | Weekly Mon 10 AM | ✅ Active | Auto via build_overload.py |
+| WHOOP Daily Sync | Daily 08:00 UTC | ✅ Active | Auto via sync.py |
+| Renpho Body Sync | Daily 14:00 UTC (~10:00 EDT) | ✅ Active | Auto via renpho_pull.py |
+| Fitness Dashboard Build | Daily 12:00 UTC (~08:00 EDT) | ✅ Active | Auto via build_overload.py |
 | **Medical** |
-| Lab PDF Ingestion | Weekly Mon 9 AM | ✅ Active | Auto via ingest_labs_gdrive.py |
-| Dashboard Rebuild | Weekly Mon 10 AM | ✅ Active | Auto via build_dashboards.py |
-| Drive Cleanup | Monthly 1st midnight | ✅ Active | Auto via clean_medical_drive.py |
+| Lab PDF Ingestion | Weekly Mon 09:00 UTC | ✅ Active | Auto via ingest_labs_gdrive.py |
+| Dashboard Rebuild | Weekly Mon 10:00 UTC | ✅ Active | Auto via build_dashboards.py |
+| Drive Cleanup | Monthly 1st 00:00 UTC | ✅ Active | Auto via clean_medical_drive.py |
 | **Documents** |
 | Personal Docs Filing | Manual | ✅ Active | On-demand via PROCESS_INBOX.bat |
 | Expiration Scanner | Manual | ✅ Active | On-demand via SCAN_EXPIRATIONS.bat |
@@ -227,28 +225,25 @@ graph TB
         FIDELITY[Fidelity]
         WHOOP[WHOOP API]
         RENPHO[Renpho API]
-        REDFIN[Redfin]
         GDRIVE[Google Drive<br/>Medical PDFs]
     end
 
     subgraph "GitHub Actions Ingestion"
-        PLAID_C[plaid_sync.py<br/>Daily 8 AM]
-        PLAID_I[plaid_investments_sync.py<br/>Weekdays 9 PM]
-        WHOOP_S[sync.py<br/>Daily 8 AM]
-        BODY_S[sync_renpho.py<br/>Daily 9 AM]
-        REDFIN_S[fetch_redfin.py<br/>Monthly 1st]
-        LABS_I[ingest_labs_gdrive.py<br/>Weekly Mon 9 AM]
+        PLAID_C[plaid_sync.py<br/>Daily 13:00 UTC]
+        PLAID_I[plaid_investments_sync.py<br/>Weekdays 22:00 UTC]
+        WHOOP_S[sync.py<br/>Daily 08:00 UTC]
+        BODY_S[renpho_pull.py<br/>Daily 14:00 UTC]
+        LABS_I[ingest_labs_gdrive.py<br/>Weekly Mon 09:00 UTC]
     end
 
     subgraph "Supabase Storage"
-        FINANCE_DB[(Finances DB<br/>uuvsvtpfcexhqojlrsxy)]
-        HEALTH_DB[(Health DB<br/>mwqnplwhktphfuewswfa)]
+        SUPA_DB[(Unified Supabase DB<br/>uuvsvtpfcexhqojlrsxy<br/>Finance + Health tables)]
     end
 
     subgraph "Dashboard Generation"
         BUILD_F[finances.html<br/>Static reads]
-        BUILD_FIT[build_overload.py<br/>Weekly Mon 10 AM]
-        BUILD_MED[build_dashboards.py<br/>Weekly Mon 10 AM]
+        BUILD_FIT[build_overload.py<br/>Daily 12:00 UTC]
+        BUILD_MED[build_dashboards.py<br/>Weekly Mon 10:00 UTC]
     end
 
     subgraph "GitHub Pages Deployment"
@@ -267,19 +262,17 @@ graph TB
     FIDELITY -->|Plaid API| PLAID_I
     WHOOP -->|OAuth API| WHOOP_S
     RENPHO -->|API| BODY_S
-    REDFIN -->|Scraping| REDFIN_S
     GDRIVE -->|Drive API| LABS_I
 
-    PLAID_C --> FINANCE_DB
-    PLAID_I --> FINANCE_DB
-    REDFIN_S --> FINANCE_DB
-    WHOOP_S --> HEALTH_DB
-    BODY_S --> HEALTH_DB
-    LABS_I --> HEALTH_DB
+    PLAID_C --> SUPA_DB
+    PLAID_I --> SUPA_DB
+    WHOOP_S --> SUPA_DB
+    BODY_S --> SUPA_DB
+    LABS_I --> SUPA_DB
 
-    FINANCE_DB --> BUILD_F
-    HEALTH_DB --> BUILD_FIT
-    HEALTH_DB --> BUILD_MED
+    SUPA_DB --> BUILD_F
+    SUPA_DB --> BUILD_FIT
+    SUPA_DB --> BUILD_MED
 
     BUILD_F --> DASH_F
     BUILD_FIT --> DASH_FIT
@@ -296,33 +289,54 @@ graph TB
     style DASH_F fill:#10b981,stroke:#059669,color:#fff
     style DASH_FIT fill:#ef4444,stroke:#dc2626,color:#fff
     style DASH_MED fill:#3b82f6,stroke:#2563eb,color:#fff
-    style FINANCE_DB fill:#f59e0b,stroke:#d97706,color:#fff
-    style HEALTH_DB fill:#f59e0b,stroke:#d97706,color:#fff
+    style SUPA_DB fill:#f59e0b,stroke:#d97706,color:#fff
 ```
 
 ---
 
 ## Data Storage
 
-### Supabase Databases
+### Supabase Database
 
-**Finances (uuvsvtpfcexhqojlrsxy.supabase.co):**
+**Unified Supabase Project (uuvsvtpfcexhqojlrsxy.supabase.co):**
+
+All finance and health data lives in one Supabase project. Every workflow uses the same `SUPABASE_URL` / `SUPABASE_KEY` pair.
+
+**Finance tables:**
 - `expense_transactions` - Chase transactions with categories
 - `stocks_crypto_history` - Fidelity investment holdings (daily)
 - `real_estate_history` - Property value estimates (monthly)
 - `category_mapping` - Expense categorization rules
+- `plaid_accounts` - Plaid account mappings
+- `plaid_sync_state` - Plaid cursor state
 
-**Health (mwqnplwhktphfuewswfa.supabase.co):**
+**Health tables:**
 - `whoop_recovery` - Daily recovery scores, HRV, resting HR
 - `whoop_cycles` - 24-48hr physiological cycles
 - `whoop_sleep` - Sleep sessions with stage breakdown
 - `whoop_workouts` - Workout sessions with HR zones
+- `whoop_body` - Body metrics from WHOOP
 - `body_composition` - Renpho scale measurements
+- `inbody_results` - InBody scan data
 - `nutrition_log` - Daily nutrition intake
 - `strength_sessions` - Training sessions
 - `strength_exercises` - Exercise library
 - `strength_sets` - Set-by-set training data
+- `training_plan` - Training program plans
+- `meal_plan` - Meal planning
+- `meal_templates` - Meal templates
+- `running_log` - Running workouts
 - `labs` - Medical lab results from PDFs
+
+**v2 app tables:**
+- `exercises` - Exercise library for Lyftr
+- `workouts` - Workout templates
+- `workout_exercises` - Workout exercise mapping
+- `completed_workouts` - Completed workout sessions
+- `completed_workout_exercises` - Completed exercise details
+
+**Config:**
+- `app_config` - Application configuration
 
 ### Google Drive
 
@@ -349,10 +363,8 @@ All secrets stored as **GitHub Repository Secrets** (Settings → Secrets → Ac
 - `PLAID_FIDELITY_ITEM_ID` - Fidelity item ID
 
 ### Supabase
-- `SUPABASE_URL` - Finances project URL
-- `SUPABASE_KEY` - Finances anon/service key
-- `SUPABASE_URL_HEALTH` - Health project URL
-- `SUPABASE_KEY_HEALTH` - Health anon/service key
+- `SUPABASE_URL` - Unified project URL (uuvsvtpfcexhqojlrsxy)
+- `SUPABASE_KEY` - Anon/service key
 
 ### WHOOP
 - `WHOOP_CLIENT_ID` - WHOOP OAuth app ID
@@ -398,10 +410,9 @@ Check: https://github.com/fernandomartinez-de/personal/actions
 4. Hard refresh browser: `Ctrl + Shift + R`
 
 ### Supabase Data Validation
-**Finances:** https://supabase.com/dashboard/project/uuvsvtpfcexhqojlrsxy  
-**Health:** https://supabase.com/dashboard/project/mwqnplwhktphfuewswfa  
+**Unified project:** https://supabase.com/dashboard/project/uuvsvtpfcexhqojlrsxy  
 
-Check table row counts and recent timestamps.
+Check table row counts and recent timestamps for both finance and health tables.
 
 ### Plaid Connection Issues
 Run link scripts to reconnect:
@@ -470,8 +481,7 @@ Each workflow cross-references vault knowledge:
 
 - 🌐 [Live Dashboards](https://fernandomartinez-de.github.io/personal/)
 - 🐙 [GitHub Repository](https://github.com/fernandomartinez-de/personal)
-- 📊 [Supabase Finances](https://supabase.com/dashboard/project/uuvsvtpfcexhqojlrsxy)
-- 📊 [Supabase Health](https://supabase.com/dashboard/project/mwqnplwhktphfuewswfa)
+- 📊 [Supabase Dashboard](https://supabase.com/dashboard/project/uuvsvtpfcexhqojlrsxy)
 - 🔑 [GitHub Secrets](https://github.com/fernandomartinez-de/personal/settings/secrets/actions)
 - 📋 [Plaid Dashboard](https://dashboard.plaid.com/)
 - 💾 [Google Drive](https://drive.google.com/drive/my-drive)
@@ -489,4 +499,4 @@ Each workflow cross-references vault knowledge:
 - ✅ Fixed medical dashboard iframe paths
 - ✅ Reorganized icon assets to assets/ folder
 - ✅ Updated service worker cache version to personal-v2
-- 🔄 Pending: Fidelity Investments product approval from Plaid
+- ✅ Fidelity Investments LIVE via Plaid (since 2026-09-27)
