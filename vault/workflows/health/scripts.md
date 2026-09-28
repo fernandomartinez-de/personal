@@ -1,7 +1,8 @@
 ---
 tags: [health, scripts, automation, python]
 category: health
-last_updated: 2026-09-13
+last_updated: 2026-09-27
+related: [[workflows/tech/lyftr-app]]
 ---
 
 # Health Scripts
@@ -129,11 +130,24 @@ python bootstrap.py
 **What it does:**
 1. Authenticates to Google Drive API via service account
 2. Scans `G:\My Drive\Personal\Medical\{YEAR}\labs\` for PDFs
-3. Extracts text from PDFs using PyPDF2
-4. Parses lab values using regex patterns:
-   - TSH, glucose, cholesterol, HDL, LDL, triglycerides, thyroglobulin
-5. Inserts structured data into Supabase `labs` table
-6. Skips duplicates (same test_date already exists)
+3. Extracts text from PDFs using PyPDF2 + `pdfplumber`
+4. Parses lab values using a Claude Sonnet LLM prompt (`LAB_EXTRACT_PROMPT`)
+   that returns strict JSON `{marcador, panel, valor, unidad, ref_min,
+   ref_max, flag}` per row
+5. **Normalizes `panel`** to one of 11 canonical categories via
+   `normalize_panel(marker, raw_panel)` before insert — same rules the v2
+   Lyftr Oncologist view uses client-side, so the DB and the app agree.
+   Categories: Thyroid · Complete Blood Count · Lipids · Glucose & Metabolic
+   · Liver · Kidney · Electrolytes · Vitamins & Iron · Enzymes & Muscle ·
+   Inflammation · Other. Anything unmatched lands in Other (never crashes).
+6. Inserts structured data into Supabase `lab_results` table
+7. Skips duplicates (same test_date + marker already exists)
+
+**One-time backfill:** the same categorization rules are available as a
+`CASE WHEN` SQL statement to re-map any pre-existing rows written with the
+old free-form panel strings. See [[workflows/tech/lyftr-app]] for the
+category list; run once in Supabase SQL editor when introducing a new
+category or after a schema migration.
 
 **Source folder structure:**
 ```
@@ -169,7 +183,7 @@ python ingest_labs_gdrive.py
 
 **Output:**
 - Console log of files processed
-- Inserted rows in `labs` table
+- Inserted rows in `lab_results` table (categorized panel column)
 
 **Error handling:**
 - 403 Forbidden → Service account lacks Drive access, reshare folder

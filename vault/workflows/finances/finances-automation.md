@@ -2,32 +2,41 @@
 tags: [finance, automation, monthly, fully-automated, plaid]
 category: finance
 status: active
-last_updated: 2026-09-21
+last_updated: 2026-09-27
 repo: finance (separate)
 automation: plaid
 ---
 
 # Finance Automation
 
-**Status:** Chase transactions LIVE via Plaid daily pull (since 2026-09-21); Fidelity retirement holdings pull added and awaiting Plaid review; investment/property tracking + dashboard unchanged.
+**Status:** Chase transactions LIVE via Plaid daily pull (since 2026-09-21);
+Fidelity retirement holdings pull is now LIVE (weekday snapshots landing in
+`stocks_crypto_history` as `asset_type = 'Retirement'`); investment /
+property tracking and both dashboards (v1 `finances.html` + v2 Lyftr React
+app, see [[workflows/tech/lyftr-app]]) read from those tables live.
 
-Daily automated Chase transaction pull via Plaid, categorized against `category_mapping`, weekday Fidelity retirement holdings pull via Plaid Investments, plus investment portfolio tracking and the finances dashboard.
+Daily automated Chase transaction pull via Plaid, categorized against
+`category_mapping`, weekday Fidelity retirement holdings pull via Plaid
+Investments, plus investment portfolio tracking and the finances dashboards.
 
 ## Plaid Chase Transactions Pull (LIVE)
 
 Chase statement downloads are automated via Plaid. A daily GitHub Action
-(`.github/workflows/pull-finances.yml`) calls Plaid `/transactions/sync` and
-upserts into Supabase `expense_transactions`, categorized via `category_mapping`.
-Cursor state lives in `plaid_sync_state`; the account map in `plaid_accounts`.
+(`.github/workflows/pull-finances.yml`, cron `0 13 * * *` = 09:00 ET) runs
+`finances/scripts/plaid_sync.py`, which calls Plaid `/transactions/sync` and
+upserts into Supabase `expense_transactions`, categorized via
+`category_mapping`. Cursor state lives in `plaid_sync_state`; the account
+map in `plaid_accounts`.
 
 **Accounts:**
 - Chase Total Checking ...6813 -> source `checking`
 - Chase Freedom Unlimited ...5113 -> source `cc_5113`
 - Chase Sapphire Preferred ...4433 -> source `cc_4433`
 
-**One time auth:** `finances/plaid_link.py` (Plaid Hosted Link).
-**GitHub secrets:** `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ACCESS_TOKEN`, `PLAID_ITEM_ID`
-(plus the shared `SUPABASE_URL` / `SUPABASE_KEY`).
+**One time auth:** `finances/scripts/plaid_link.py` (Plaid Hosted Link).
+**GitHub secrets:** `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ACCESS_TOKEN`,
+`PLAID_ITEM_ID` (plus the shared `SUPABASE_URL` / `SUPABASE_KEY`). Local
+`.plaid_secrets.local` / `.env` files are gitignored.
 
 **Status:** LIVE since 2026-09-21. Chase OAuth cleared Plaid review on
 2026-09-21; first run pulled 64 transactions and reconciled clean with no
@@ -36,7 +45,8 @@ duplicates.
 ## Plaid Fidelity Investments Pull
 
 Second finance pipeline. Weekday GitHub Action
-(`.github/workflows/pull-investments.yml`, 22:00 UTC) calls Plaid
+(`.github/workflows/pull-investments.yml`, cron `0 22 * * 1-5` = 18:00 ET)
+runs `finances/scripts/plaid_investments_sync.py`, which calls Plaid
 `/investments/holdings/get` for the linked Fidelity item and writes daily
 holdings snapshots into Supabase `stocks_crypto_history` with asset_type
 `Retirement` (or `Brokerage`). Each run deletes and reinserts only that
@@ -44,14 +54,18 @@ day's Retirement/Brokerage rows so the hand-tracked Stock/Crypto rows are
 untouched. A NetBenefits 401k that returns only the account balance (no
 per-fund holdings) is recorded as a single balance row.
 
-**One time auth:** `finances/plaid_investments_link.py` (separate Plaid item
-with the Investments product; separate access token from Chase).
+**One time auth:** `finances/scripts/plaid_investments_link.py` (separate
+Plaid item with the Investments product; separate access token from Chase).
 **GitHub secret:** `PLAID_FIDELITY_ACCESS_TOKEN` (plus the existing
-`PLAID_CLIENT_ID`, `PLAID_SECRET`, `SUPABASE_URL`, `SUPABASE_KEY`).
+`PLAID_CLIENT_ID`, `PLAID_SECRET`, `SUPABASE_URL`, `SUPABASE_KEY`). Local
+`.plaid_investments_secrets.local` file is gitignored.
 
-**Status:** Submitted to Plaid review 2026-09-21. The retirement card in
-`finances.html` is still hardcoded pending a wire-up to
-`stocks_crypto_history` where asset_type = 'Retirement'.
+**Status:** LIVE. Current holding is the CG 2055 target-date fund (ticker
+`ONUY`), balance around $3,120.90 as of 2026-09-27. The v2 Lyftr Investments
+tab reads live from `stocks_crypto_history` (see [[workflows/tech/lyftr-app]]);
+the old `finances.html` retirement card is superseded by that live wire-up
+but the file itself still ships a `$2,480.30` constant as a defensive
+fallback when the query returns zero rows.
 
 The old manual pipeline (`process_personal_inbox.py` / `load_bronze.py`, manual
 Chase Excel download) is retained for backfills but is no longer routine.
@@ -571,16 +585,16 @@ No GitHub Actions currently - all manual execution.
 - Dropped 11 redundant files from finance repo
 
 **Current Automation Status:**
-- ✅ Stocks: Finnhub API (dashboard button)
-- ✅ Crypto: CoinGecko API (dashboard button)
-- ✅ Real Estate (Zillow): RapidAPI (dashboard button)
+- ✅ Expenses: Plaid `/transactions/sync` daily (LIVE 2026-09-21)
+- ✅ Stocks: Finnhub API (v2 Lyftr Refresh button, on-demand)
+- ✅ Crypto: CoinGecko API (v2 Lyftr Refresh button, on-demand)
+- ✅ Real Estate (Zillow): RapidAPI (v2 Lyftr Refresh button, on-demand)
 - ⚠️ Real Estate (Redfin): Manual script (CORS restrictions)
-- ⚠️ Retirement: Hardcoded value (no API available)
+- ✅ Retirement: Plaid `/investments/holdings/get` weekdays (LIVE 2026-09-27)
 
 **Manual Steps Remaining:**
 1. Monthly: Run `fetch_redfin_property_value.py` script
-2. Monthly: Update retirement 401(k) balance in code
-3. As needed: Add new category mapping rules for unknown merchants
+2. As needed: Add new category mapping rules for unknown merchants
 
 ---
 
