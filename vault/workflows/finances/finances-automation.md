@@ -9,11 +9,7 @@ automation: plaid
 
 # Finance Automation
 
-**Status:** Chase transactions LIVE via Plaid daily pull (since 2026-09-21);
-Fidelity retirement holdings pull is now LIVE (weekday snapshots landing in
-`stocks_crypto_history` as `asset_type = 'Retirement'`); investment /
-property tracking and both dashboards (v1 `finances.html` + v2 Lyftr React
-app, see [[workflows/tech/lyftr-app]]) read from those tables live.
+**Status:** Chase transactions LIVE via Plaid daily pull (since 2026-09-21); Fidelity retirement holdings LIVE via Plaid Investments weekday pull (since 2026-09-27); investment/property tracking + dashboard unchanged.
 
 Daily automated Chase transaction pull via Plaid, categorized against
 `category_mapping`, weekday Fidelity retirement holdings pull via Plaid
@@ -60,12 +56,7 @@ Plaid item with the Investments product; separate access token from Chase).
 `PLAID_CLIENT_ID`, `PLAID_SECRET`, `SUPABASE_URL`, `SUPABASE_KEY`). Local
 `.plaid_investments_secrets.local` file is gitignored.
 
-**Status:** LIVE. Current holding is the CG 2055 target-date fund (ticker
-`ONUY`), balance around $3,120.90 as of 2026-09-27. The v2 Lyftr Investments
-tab reads live from `stocks_crypto_history` (see [[workflows/tech/lyftr-app]]);
-the old `finances.html` retirement card is superseded by that live wire-up
-but the file itself still ships a `$2,480.30` constant as a defensive
-fallback when the query returns zero rows.
+**Status:** LIVE since 2026-09-27. Fidelity OAuth cleared Plaid review; the one-time link produced `PLAID_FIDELITY_ACCESS_TOKEN` + `PLAID_FIDELITY_ITEM_ID`. The `stocks_crypto_history` asset_type CHECK was widened to allow `Stock` / `Crypto` / `Retirement` / `Brokerage`. First verified run wrote the CG 2055 target-date fund (ticker `ONUY`) at $3,120.90 as asset_type `Retirement`, confirmed via the `pull-investments.yml` GitHub Action (22:00 UTC weekdays). The v2 Lyftr app reads this live value; a $2,480.30 hardcoded constant remains only as a defensive fallback when the query returns zero rows.
 
 The old manual pipeline (`process_personal_inbox.py` / `load_bronze.py`, manual
 Chase Excel download) is retained for backfills but is no longer routine.
