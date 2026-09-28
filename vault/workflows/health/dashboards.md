@@ -12,7 +12,7 @@ HTML dashboards for visualizing health data trends.
 **Live dashboards (v1 static):** https://fernandomartinez-de.github.io/vital-signal-reports/
 
 **v2 Lyftr native views (as of 2026-09-27):** the React app at
-`health/fitness/exercise-app/` now renders **native React** Oncologist
+`exercise-app/` now renders **native React** Oncologist
 and Nutritionist views at `/medical/oncologist` and `/medical/nutritionist`.
 These read the same Supabase tables directly and replace the previous
 iframe-of-the-v1-HTML approach. Both dashboards below are still generated
