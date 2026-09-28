@@ -9,7 +9,7 @@ related: [[workflows/tech/README]], [[workflows/tech/infrastructure]], [[workflo
 # Lyftr — v2 React Dashboard
 
 The **Lyftr** app is the v2 React front-end for the personal-life dashboards.
-It lives inside the repo at `exercise-app/` and coexists with
+It lives inside the repo at `lyftr/app/` and coexists with
 the v1 **Overload** static HTML dashboards. Both read from the same Supabase
 tables; they are two different presentation layers on top of one data plane.
 
@@ -128,7 +128,7 @@ Both apps ship in the same repo and are served together via GitHub Pages.
 
 | | v1 Overload (static) | v2 Lyftr (React) |
 | --- | --- | --- |
-| Location | `finances/finances.html`, `health/fitness/overload.html` (built weekly from `template.html` + `app.js`), `health/medical/medical.html` | `exercise-app/` (Vite build) |
+| Location | `finances/finances.html`, `health/fitness/overload.html` (built weekly from `template.html` + `app.js`), `health/medical/medical.html` | `lyftr/app/` (Vite build) |
 | Data | Reads Supabase directly via the JS anon client | Same tables, wrapped in a routed SPA |
 | Charts | Chart.js CDN + vanilla JS | Inline SVG (custom) + a handful of React Bits |
 | Refresh loop | User clicks buttons on the page | Same buttons, plus scheduled GitHub Actions writing to Supabase |
@@ -140,7 +140,7 @@ the v2 hub is the daily driver.
 ## Deploying
 
 ```
-cd exercise-app
+cd lyftr/app
 npm install
 npm run build        # verify locally
 ```
