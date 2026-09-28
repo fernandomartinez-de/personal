@@ -13,7 +13,7 @@ Technical infrastructure, automation pipelines, and troubleshooting guides for F
 **Infrastructure documentation:**
 - [[tech/infrastructure]] - System architecture overview
 - [[tech/services]] - External services and credentials
-- [[tech/lyftr-app]] - v2 React dashboard (Lyftr) — hub, routes, and its relationship to the v1 Overload static app
+- [[tech/luna-app]] - v2 React dashboard (Luna) — hub, routes, and its relationship to the v1 Overload static app
 
 **Troubleshooting:**
 - [[tech/troubleshooting]] - Common issues and fixes

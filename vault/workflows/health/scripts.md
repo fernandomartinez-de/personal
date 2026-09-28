@@ -2,7 +2,7 @@
 tags: [health, scripts, automation, python]
 category: health
 last_updated: 2026-09-27
-related: [[workflows/tech/lyftr-app]]
+related: [[workflows/tech/luna-app]]
 ---
 
 # Health Scripts
@@ -136,7 +136,7 @@ python bootstrap.py
    ref_max, flag}` per row
 5. **Normalizes `panel`** to one of 11 canonical categories via
    `normalize_panel(marker, raw_panel)` before insert — same rules the v2
-   Lyftr Oncologist view uses client-side, so the DB and the app agree.
+   Luna Oncologist view uses client-side, so the DB and the app agree.
    Categories: Thyroid · Complete Blood Count · Lipids · Glucose & Metabolic
    · Liver · Kidney · Electrolytes · Vitamins & Iron · Enzymes & Muscle ·
    Inflammation · Other. Anything unmatched lands in Other (never crashes).
@@ -145,7 +145,7 @@ python bootstrap.py
 
 **One-time backfill:** the same categorization rules are available as a
 `CASE WHEN` SQL statement to re-map any pre-existing rows written with the
-old free-form panel strings. See [[workflows/tech/lyftr-app]] for the
+old free-form panel strings. See [[workflows/tech/luna-app]] for the
 category list; run once in Supabase SQL editor when introducing a new
 category or after a schema migration.
 

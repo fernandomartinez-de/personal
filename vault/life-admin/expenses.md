@@ -1,7 +1,7 @@
 ---
 type: life-admin
 last_updated: 2026-09-27
-related: [[life-admin/credit-banking]], [[life-admin/real-estate]], [[workflows/finances/finances-automation]], [[workflows/tech/lyftr-app]]
+related: [[life-admin/credit-banking]], [[life-admin/real-estate]], [[workflows/finances/finances-automation]], [[workflows/tech/luna-app]]
 ---
 
 # Expenses
@@ -39,7 +39,7 @@ flow still works:
 
 - **v1 (Overload / static):** `finances/finances.html` reads Supabase
   directly, categorized fixed costs + discretionary trends.
-- **v2 (Lyftr / React):** [[workflows/tech/lyftr-app]] Finances → Expenses
+- **v2 (Luna / React):** [[workflows/tech/luna-app]] Finances → Expenses
   page (route `/finances`) with income & expenses list, category
   distribution heatmap, net-remaining trend, and a PIN-gated Monthly
   Payroll row. Sensitive values (payroll) are hidden behind a 4-digit

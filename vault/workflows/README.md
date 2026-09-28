@@ -329,7 +329,7 @@ All finance and health data lives in one Supabase project. Every workflow uses t
 - `labs` - Medical lab results from PDFs
 
 **v2 app tables:**
-- `exercises` - Exercise library for Lyftr
+- `exercises` - Exercise library for Luna
 - `workouts` - Workout templates
 - `workout_exercises` - Workout exercise mapping
 - `completed_workouts` - Completed workout sessions

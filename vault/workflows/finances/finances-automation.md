@@ -56,7 +56,7 @@ Plaid item with the Investments product; separate access token from Chase).
 `PLAID_CLIENT_ID`, `PLAID_SECRET`, `SUPABASE_URL`, `SUPABASE_KEY`). Local
 `.plaid_investments_secrets.local` file is gitignored.
 
-**Status:** LIVE since 2026-09-27. Fidelity OAuth cleared Plaid review; the one-time link produced `PLAID_FIDELITY_ACCESS_TOKEN` + `PLAID_FIDELITY_ITEM_ID`. The `stocks_crypto_history` asset_type CHECK was widened to allow `Stock` / `Crypto` / `Retirement` / `Brokerage`. First verified run wrote the CG 2055 target-date fund (ticker `ONUY`) at $3,120.90 as asset_type `Retirement`, confirmed via the `pull-investments.yml` GitHub Action (22:00 UTC weekdays). The v2 Lyftr app reads this live value; a $2,480.30 hardcoded constant remains only as a defensive fallback when the query returns zero rows.
+**Status:** LIVE since 2026-09-27. Fidelity OAuth cleared Plaid review; the one-time link produced `PLAID_FIDELITY_ACCESS_TOKEN` + `PLAID_FIDELITY_ITEM_ID`. The `stocks_crypto_history` asset_type CHECK was widened to allow `Stock` / `Crypto` / `Retirement` / `Brokerage`. First verified run wrote the CG 2055 target-date fund (ticker `ONUY`) at $3,120.90 as asset_type `Retirement`, confirmed via the `pull-investments.yml` GitHub Action (22:00 UTC weekdays). The v2 Luna app reads this live value; a $2,480.30 hardcoded constant remains only as a defensive fallback when the query returns zero rows.
 
 The old manual pipeline (`process_personal_inbox.py` / `load_bronze.py`, manual
 Chase Excel download) is retained for backfills but is no longer routine.
@@ -577,9 +577,9 @@ No GitHub Actions currently - all manual execution.
 
 **Current Automation Status:**
 - ✅ Expenses: Plaid `/transactions/sync` daily (LIVE 2026-09-21)
-- ✅ Stocks: Finnhub API (v2 Lyftr Refresh button, on-demand)
-- ✅ Crypto: CoinGecko API (v2 Lyftr Refresh button, on-demand)
-- ✅ Real Estate (Zillow): RapidAPI (v2 Lyftr Refresh button, on-demand)
+- ✅ Stocks: Finnhub API (v2 Luna Refresh button, on-demand)
+- ✅ Crypto: CoinGecko API (v2 Luna Refresh button, on-demand)
+- ✅ Real Estate (Zillow): RapidAPI (v2 Luna Refresh button, on-demand)
 - ⚠️ Real Estate (Redfin): Manual script (CORS restrictions)
 - ✅ Retirement: Plaid `/investments/holdings/get` weekdays (LIVE 2026-09-27)
 

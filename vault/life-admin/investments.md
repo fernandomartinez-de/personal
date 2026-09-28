@@ -1,7 +1,7 @@
 ---
 type: life-admin
 last_updated: 2026-09-27
-related: [[life-admin/taxes]], [[life-admin/retirement]], [[workflows/finances/finances-automation]], [[workflows/tech/lyftr-app]]
+related: [[life-admin/taxes]], [[life-admin/retirement]], [[workflows/finances/finances-automation]], [[workflows/tech/luna-app]]
 ---
 
 # Investments & Accounts
@@ -65,9 +65,9 @@ Plaid item from Chase). Access token stored in GitHub Actions secret
 `.plaid_investments_secrets.local` and `.env` are gitignored and never
 committed. Details in [[workflows/finances/finances-automation]].
 
-## Live Price Refresh (v2 Lyftr Investments Tab)
+## Live Price Refresh (v2 Luna Investments Tab)
 
-The v2 React app (see [[workflows/tech/lyftr-app]]) has a manual **↻ Refresh
+The v2 React app (see [[workflows/tech/luna-app]]) has a manual **↻ Refresh
 Prices** button on the Investments page that writes a fresh snapshot into
 `stocks_crypto_history` on demand:
 

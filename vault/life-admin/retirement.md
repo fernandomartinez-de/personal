@@ -1,7 +1,7 @@
 ---
 type: life-admin
 last_updated: 2026-09-27
-related: [[employment]], [[investments]], [[taxes]], [[workflows/finances/finances-automation]], [[workflows/tech/lyftr-app]]
+related: [[employment]], [[investments]], [[taxes]], [[workflows/finances/finances-automation]], [[workflows/tech/luna-app]]
 ---
 
 # Retirement Accounts
@@ -25,7 +25,7 @@ only exposes the account balance rather than each fund, the pipeline records
 the total account balance as a single row (asset_name suffixed `(balance)`)
 so the retirement value is still captured.
 
-The v2 Lyftr app (see [[workflows/tech/lyftr-app]]) reads this live value in
+The v2 Luna app (see [[workflows/tech/luna-app]]) reads this live value in
 the Hub card, Finances → Investments page (sunburst / ladder / stat cards),
 and the "How Your 401(k) Works" modal. The prior hardcoded $2,480.30
 fallback constant lingers in a few source files as a defensive default when
