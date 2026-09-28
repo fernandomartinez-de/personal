@@ -15,7 +15,7 @@ two ways rows land in that table:
 
 - Daily GitHub Action `.github/workflows/pull-finances.yml`, cron
   `0 13 * * *` (09:00 ET).
-- Script: `finances/scripts/plaid_sync.py`.
+- Script: `finances/scripts/plaid_chase_sync.py`.
 - Calls Plaid `/transactions/sync`, upserts into `expense_transactions`,
   categorized against `category_mapping`.
 - Cursor state kept in `plaid_sync_state`; account map in `plaid_accounts`.
@@ -49,5 +49,5 @@ flow still works:
 
 - **2026-09-21:** Chase OAuth cleared Plaid review; first daily run
   reconciled clean with 64 transactions.
-- **2026-09-27:** `finances/scripts/plaid_sync.py` is now the canonical
+- **2026-09-27:** `finances/scripts/plaid_chase_sync.py` is now the canonical
   path (root-level copies removed). `pull-finances.yml` updated.

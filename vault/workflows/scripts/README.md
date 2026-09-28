@@ -67,8 +67,8 @@ This folder serves as a navigation hub. Each workflow domain (health, docs, fina
 
 | Script | Purpose | Schedule | Status |
 |--------|---------|----------|--------|
-| `finances/plaid_link.py` | One time: connect Chase via Plaid Hosted Link | Manual once | 🟢 Active |
-| `finances/plaid_sync.py` | Daily Plaid Chase transactions -> Supabase `expense_transactions` | Daily 13:00 UTC (GH Actions) | 🟢 Active |
+| `finances/plaid_chase_link.py` | One time: connect Chase via Plaid Hosted Link | Manual once | 🟢 Active |
+| `finances/plaid_chase_sync.py` | Daily Plaid Chase transactions -> Supabase `expense_transactions` | Daily 13:00 UTC (GH Actions) | 🟢 Active |
 | `finances/plaid_investments_link.py` | One time: connect Fidelity (Investments product) via Plaid Hosted Link | Manual once | 🟢 Active |
 | `finances/plaid_investments_sync.py` | Daily weekday Plaid holdings -> Supabase `stocks_crypto_history` (Retirement/Brokerage) | Weekdays 22:00 UTC (GH Actions) | 🟢 Active |
 | `docs/process_personal_inbox.py` | Classify and file Chase statements to Google Drive | Manual backfill | 🟢 Active |

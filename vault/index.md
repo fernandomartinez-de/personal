@@ -18,7 +18,7 @@ Complete inventory of all vault files organized by folder.
 
 ### workflows/finances/ (5 files)
 - [[workflows/finances/finances-automation]] - Chase transactions pull LIVE (2026-09-21) + weekday Fidelity investments pull + expense tracking + budgets
-- [[workflows/finances/scripts]] - `plaid_link.py`, `plaid_sync.py`, `plaid_investments_link.py`, `plaid_investments_sync.py`, plus property value + backfill scripts
+- [[workflows/finances/scripts]] - `plaid_chase_link.py`, `plaid_chase_sync.py`, `plaid_investments_link.py`, `plaid_investments_sync.py`, plus property value + backfill scripts
 - [[workflows/finances/supabase-tables]] - Finance schemas incl. `plaid_sync_state`, `plaid_accounts`, `expense_transactions.plaid_transaction_id` unique index, `stocks_crypto_history` now also carries Plaid Retirement/Brokerage holdings, `category_mapping` gained `Fees` category
 - [[workflows/finances/credit-banking]] - Chase Freedom/Unlimited, Amex extension, banking
 - [[workflows/finances/report]] - Budget rules and notification configuration (TBD)

@@ -19,7 +19,7 @@ Investments, plus investment portfolio tracking and the finances dashboards.
 
 Chase statement downloads are automated via Plaid. A daily GitHub Action
 (`.github/workflows/pull-finances.yml`, cron `0 13 * * *` = 09:00 ET) runs
-`finances/scripts/plaid_sync.py`, which calls Plaid `/transactions/sync` and
+`finances/scripts/plaid_chase_sync.py`, which calls Plaid `/transactions/sync` and
 upserts into Supabase `expense_transactions`, categorized via
 `category_mapping`. Cursor state lives in `plaid_sync_state`; the account
 map in `plaid_accounts`.
@@ -29,7 +29,7 @@ map in `plaid_accounts`.
 - Chase Freedom Unlimited ...5113 -> source `cc_5113`
 - Chase Sapphire Preferred ...4433 -> source `cc_4433`
 
-**One time auth:** `finances/scripts/plaid_link.py` (Plaid Hosted Link).
+**One time auth:** `finances/scripts/plaid_chase_link.py` (Plaid Hosted Link).
 **GitHub secrets:** `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ACCESS_TOKEN`,
 `PLAID_ITEM_ID` (plus the shared `SUPABASE_URL` / `SUPABASE_KEY`). Local
 `.plaid_secrets.local` / `.env` files are gitignored.

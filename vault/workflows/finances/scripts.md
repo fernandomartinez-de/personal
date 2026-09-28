@@ -17,12 +17,12 @@ Python scripts for expense tracking, property value monitoring, and investment d
 
 ## Active Scripts
 
-### plaid_link.py
+### plaid_chase_link.py
 
 **Purpose:** One time Plaid Hosted Link auth to connect Chase and obtain the
 long-lived access token used by the daily sync.
 
-**Location:** `finances/plaid_link.py`
+**Location:** `finances/plaid_chase_link.py`
 
 **Status:** 🟢 **Active** (added 2026-09-21) - Run once locally
 
@@ -31,7 +31,7 @@ long-lived access token used by the daily sync.
 cd finances
 cp .env.example .env      # add PLAID_CLIENT_ID / PLAID_SECRET
 pip install -r requirements.txt
-python plaid_link.py
+python plaid_chase_link.py
 ```
 
 **What it does:**
@@ -46,12 +46,12 @@ python plaid_link.py
 
 ---
 
-### plaid_sync.py
+### plaid_chase_sync.py
 
 **Purpose:** Daily incremental pull of Chase transactions via Plaid
 `/transactions/sync` into Supabase `expense_transactions`.
 
-**Location:** `finances/plaid_sync.py`
+**Location:** `finances/plaid_chase_sync.py`
 
 **Status:** 🟢 **Active** (added 2026-09-21) - Driven by GitHub Actions
 
@@ -725,7 +725,7 @@ Redfin Property Value Fetcher
 - Workflow: `.github/workflows/pull-finances.yml`
 - Schedule: Daily at 13:00 UTC (~09:00 America/New_York EDT)
 - Manual trigger: Available via GitHub Actions UI (`workflow_dispatch`)
-- Runs: `finances/plaid_sync.py`
+- Runs: `finances/plaid_chase_sync.py`
 - Secrets required: `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ACCESS_TOKEN`, `PLAID_ITEM_ID`, `SUPABASE_URL`, `SUPABASE_KEY`
 
 **Pull Investments (Plaid):**

@@ -115,7 +115,7 @@ Static HTML trip planning sites with real-time updates:
 | Workflow | Schedule | Status | Last Update |
 |----------|----------|--------|-------------|
 | **Finances** |
-| Chase Transactions | Daily 13:00 UTC (~09:00 EDT) | ✅ Active | Auto via plaid_sync.py |
+| Chase Transactions | Daily 13:00 UTC (~09:00 EDT) | ✅ Active | Auto via plaid_chase_sync.py |
 | Fidelity Investments | Weekdays 22:00 UTC (~18:00 EDT) | ✅ Active (live since 2026-09-27) | Auto via plaid_investments_sync.py |
 | **Fitness** |
 | WHOOP Daily Sync | Daily 08:00 UTC | ✅ Active | Auto via sync.py |
@@ -158,8 +158,8 @@ personal/
 ├── finances/                             # Finance Dashboard
 │   ├── finances.html                     # Dashboard (static Supabase reads)
 │   └── scripts/
-│       ├── plaid_link.py                 # One-time Chase connection
-│       ├── plaid_sync.py                 # Daily transaction pull
+│       ├── plaid_chase_link.py                 # One-time Chase connection
+│       ├── plaid_chase_sync.py                 # Daily transaction pull
 │       ├── plaid_investments_link.py     # One-time Fidelity connection
 │       ├── plaid_investments_sync.py     # Daily holdings pull
 │       ├── fetch_redfin_property_value.py  # Monthly property sync
@@ -229,7 +229,7 @@ graph TB
     end
 
     subgraph "GitHub Actions Ingestion"
-        PLAID_C[plaid_sync.py<br/>Daily 13:00 UTC]
+        PLAID_C[plaid_chase_sync.py<br/>Daily 13:00 UTC]
         PLAID_I[plaid_investments_sync.py<br/>Weekdays 22:00 UTC]
         WHOOP_S[sync.py<br/>Daily 08:00 UTC]
         BODY_S[renpho_pull.py<br/>Daily 14:00 UTC]
@@ -418,7 +418,7 @@ Check table row counts and recent timestamps for both finance and health tables.
 Run link scripts to reconnect:
 ```powershell
 cd finances
-python scripts\plaid_link.py              # Chase
+python scripts\plaid_chase_link.py              # Chase
 python scripts\plaid_investments_link.py  # Fidelity
 ```
 

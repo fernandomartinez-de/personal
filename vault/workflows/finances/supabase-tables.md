@@ -150,7 +150,7 @@ CREATE TABLE plaid_sync_state (
 | `institution_name` | TEXT | e.g. "Chase" |
 | `last_synced_at` | TIMESTAMPTZ | Timestamp of most recent successful sync |
 
-**Written by:** `finances/plaid_sync.py` (daily) and `finances/plaid_link.py` (initial row).
+**Written by:** `finances/plaid_chase_sync.py` (daily) and `finances/plaid_chase_link.py` (initial row).
 
 ---
 
@@ -190,8 +190,8 @@ CREATE TABLE plaid_accounts (
 | `source_code` | TEXT | Maps to `expense_transactions.source`: `checking`, `cc_5113`, `cc_4433` |
 | `updated_at` | TIMESTAMPTZ | Last self-heal from `/accounts/get` |
 
-**Written by:** `finances/plaid_sync.py` (self-heals on every daily run) and
-`finances/plaid_link.py` (initial rows on link).
+**Written by:** `finances/plaid_chase_sync.py` (self-heals on every daily run) and
+`finances/plaid_chase_link.py` (initial rows on link).
 
 ---
 

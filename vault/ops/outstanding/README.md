@@ -42,7 +42,7 @@ Tracks all vault notes with missing information, blanks to fill, research needed
 ### Remaining Manual Steps
 
 **[[workflows/finances/finances-automation]]** - Finance tracking manual work:
-- [ ] **Monthly (after Plaid approved):** Run `python plaid_sync.py` to pull new Chase transactions (replaces manual Excel downloads)
+- [ ] **Monthly (after Plaid approved):** Run `python plaid_chase_sync.py` to pull new Chase transactions (replaces manual Excel downloads)
 - [ ] **Monthly:** Fetch Redfin property estimate (run `python fetch_redfin_property_value.py`), then click dashboard "Refresh Prices" to update Zillow + recalculate average
 - [ ] **As needed:** Add new category mapping rules to Supabase when unknown merchants appear
 - [ ] **Monthly:** Review finances.html dashboard for miscategorized transactions
