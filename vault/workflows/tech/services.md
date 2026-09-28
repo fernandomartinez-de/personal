@@ -8,14 +8,26 @@ External services, credentials, and API endpoints for Fernando's personal infras
 
 ### Supabase (PostgreSQL)
 **Purpose:** Structured data storage (health, expenses, travel)  
-**Endpoint:** (from `SUPABASE_DB_URL` secret)  
 **Plan:** Free tier  
-**Tables:** 
-- Health: `whoop_recovery`, `whoop_sleep`, `whoop_cycles`, `whoop_workouts`, `labs`
-- Finance: `expense_transactions`, `category_mapping`, `stocks_crypto_history`, `real_estate_history`
-- Travel: `trips`, `trip_days`, `activities`
 
-**Access:** Connection string in GitHub repository secrets  
+**Projects:**
+
+1. **Main Project** (health, expenses)
+   - **Endpoint:** (from `SUPABASE_DB_URL` secret)
+   - **Tables:** 
+     - Health: `whoop_recovery`, `whoop_sleep`, `whoop_cycles`, `whoop_workouts`, `labs`
+     - Finance: `expense_transactions`, `category_mapping`, `stocks_crypto_history`, `real_estate_history`
+   - **Access:** Connection string in GitHub repository secrets
+
+2. **Trips Project** (family travel)
+   - **URL:** `https://hmeenrnlbdzqhbdbsxjf.supabase.co`
+   - **Purpose:** Real-time family trip collaboration
+   - **Tables:** `japan_activities`, `japan_day_headers`, `japan_glance`, `japan_inspiration`, `japan_geocache`
+   - **Storage:** `japan-images` bucket
+   - **Access:** Anonymous publishable key (embedded in HTML)
+   - **Security:** Row Level Security policies
+   - **Repository:** See `trips` repository
+
 **Dashboard:** https://supabase.com/dashboard  
 **Backup:** Automatic (verify plan includes backups)
 
@@ -44,17 +56,18 @@ External services, credentials, and API endpoints for Fernando's personal infras
 **Email:** fernandopv2655@gmail.com
 
 **Repositories:**
-- `personal` (private) - Vault, automation scripts (health, docs, finances, travel)
+- `personal` (private) - Vault, automation scripts (health, docs, finances) ~~, travel~~
 - `vital-signal-reports` (public) - Medical dashboards (GitHub Pages)
+- `trips` (public) - Family travel planning sites (GitHub Pages) - **Extracted Sept 26, 2026**
 
 **GitHub Actions:**
 - Plan: Free tier (2,000 minutes/month for private repos)
 - Usage: ~100 minutes/month
 
 **GitHub Pages:**
-- Site: https://fernandomartinez-de.github.io/vital-signal-reports/
-- Branch: `gh-pages`
-- Bandwidth: 100 GB/month soft limit
+- Medical dashboards: https://fernandomartinez-de.github.io/vital-signal-reports/ (branch: `gh-pages`)
+- Travel sites: https://fernandomartinez-de.github.io/trips/ (branch: `main`) - **New Sept 26, 2026**
+- Bandwidth: 100 GB/month soft limit (both sites)
 
 ---
 

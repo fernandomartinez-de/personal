@@ -1,14 +1,17 @@
 ---
 tags: [travel, javascript, html, no-build]
 category: travel
-last_updated: 2026-09-13
+last_updated: 2026-09-26
+repo: trips
+extraction_date: 2026-09-26
 ---
 
 # Travel Scripts
 
 **No Python scripts** - Travel planning sites are pure HTML + JavaScript.
 
-**Location:** `C:\Users\fmartine\Personal\repos\personal\travel\`
+**Repository:** `https://github.com/fernandomartinez-de/trips`  
+**Previous location:** `C:\Users\fmartine\Personal\repos\personal\travel\` (extracted Sept 26, 2026)
 
 ---
 

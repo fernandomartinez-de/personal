@@ -2,21 +2,28 @@
 tags: [travel, planning, static-site, collaboration]
 category: travel
 status: active
-last_updated: 2026-09-13
-repo: personal
+last_updated: 2026-09-26
+repo: trips
+extraction_date: 2026-09-26
 ---
 
 # Travel Planning Sites
 
 Static HTML trip planning sites with real-time family collaboration via Supabase.
 
+**Status:** Extracted to standalone repository (September 26, 2026)
+
 ## Repository
 
-`C:\Users\fmartine\Personal\repos\personal\travel\`
+**Standalone Repo (Current):**
+- GitHub: `https://github.com/fernandomartinez-de/trips`
+- Local: Clone from GitHub as needed
+- GitHub Pages: `https://fernandomartinez-de.github.io/trips/`
 
-GitHub: `https://github.com/fernandomartinez-de/personal` (travel/ folder)
-
-GitHub Pages: `https://fernandomartinez-de.github.io/trips/`
+**Previous Location (Archived):**
+- Was in: `https://github.com/fernandomartinez-de/personal` (travel/ folder)
+- Old URL: `https://fernandomartinez-de.github.io/personal/travel/`
+- **Note:** Old URL may still exist but new URL should be used
 
 ## Tables
 
@@ -69,27 +76,35 @@ One self-contained `index.html` per trip with embedded JavaScript. No build step
 
 ### Japan · November 2026
 
-**Folder:** `travel/japan/`  
+**Repository:** `https://github.com/fernandomartinez-de/trips`  
+**Folder:** `japan/`  
 **Live site:** `https://fernandomartinez-de.github.io/trips/japan/`
 
 **Files:**
-- `index.html` - Complete trip site
+- `index.html` - Complete trip site (~112 KB)
 - `schema.sql` - Supabase DDL + RLS policies + Realtime + seed data
-- `assets/img/` - Inspiration photos + hero portrait
+- `assets/img/` - Inspiration photos + hero portrait (14 images, ~1.5 MB)
 
 **Database:**
-- Project: `trips` (Supabase)
+- Project: `trips` (Supabase) - **Separate project, unchanged by extraction**
 - Tables: `japan_*` prefixed
 - Storage bucket: `japan-images`
+- URL: `https://hmeenrnlbdzqhbdbsxjf.supabase.co`
 
 ---
 
 ## Workflow: Adding a New Trip
 
+### 0. Clone Repository (if needed)
+
+```bash
+git clone https://github.com/fernandomartinez-de/trips.git
+cd trips
+```
+
 ### 1. Duplicate Existing Trip
 
 ```bash
-cd travel
 cp -r japan/ italy/
 ```
 
@@ -341,6 +356,38 @@ There is no build process. Edit HTML directly and refresh browser.
 
 **Quick references:**
 - [[quick-ref/key-dates]] - Trip departure dates
+
+---
+
+## Repository Extraction (September 26, 2026)
+
+**What changed:**
+- Extracted from `personal` monorepo to standalone `trips` repository
+- New URL: `https://fernandomartinez-de.github.io/trips/` (changed from `/personal/travel/`)
+- Repository: `https://github.com/fernandomartinez-de/trips`
+
+**What stayed the same:**
+- ✅ Supabase project (already was separate `trips` project)
+- ✅ Google Maps API key (referrer restrictions updated automatically)
+- ✅ Architecture and workflow (no changes)
+- ✅ All trip data and images
+
+**Why extracted:**
+- Independent deployment and versioning
+- Cleaner separation between personal and family projects
+- Easier to share and collaborate
+- Complete documentation in one place
+
+**Documentation included in trips repo:**
+- `README.md` - Complete features, setup, troubleshooting
+- `SETUP.md` - GitHub Pages setup guide
+- `SECRETS.md` - API keys and configuration
+- `docs/` - Copy of all vault workflow documentation
+- `EXTRACTION_SUMMARY.md` - Details of extraction process
+
+**Family action required:**
+- ❗ Share new URL: `https://fernandomartinez-de.github.io/trips/`
+- Old bookmarks will not work (or may show outdated version)
 
 ---
 
